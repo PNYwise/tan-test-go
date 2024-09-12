@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:  
+  tan-test-postgres-db:
+    image: postgres
+    restart: always
+    container_name: tan-test-postgres-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tan-test
+    ports:
+      - "5432:5432"
+    volumes:
+      - tan-test-postgres-data:/var/lib/postgresql/data
+    networks:
+      - tan-test-network
+  adminer:
+    image: adminer
+    restart: always
+    networks:
+      - tan-test-network
+    ports:
+      - 8080:8080
+  
+  tan-test-redis:
+    image: redis
+    restart: always
+    container_name: tan-test-redis
+    environment:
+      REDIS_PASSWORD: password
+    ports:
+      - "6379:6379"
+    volumes:
+      - tan-test-redis-data:/data
+    networks:
+      - tan-test-network
+    command: ["redis-server", "--requirepass", "password"]
+
+  tan-test-redis-commander:
+    image: rediscommander/redis-commander
+    restart: always
+    container_name: tan-test-redis-commander
+    environment:
+      REDIS_PORT: 6379
+      REDIS_HOST: "tan-test-redis"
+      REDIS_PASSWORD: password
+    ports:
+      - "8081:8081"
+    networks:
+      - tan-test-network
+
+
+volumes: 
+  tan-test-postgres-data:
+    name: tan-test-postgres-data
+  tan-test-redis-data:
+    name: tan-test-redis-data
+  
+networks:
+  tan-test-network:    
+    driver: bridge
