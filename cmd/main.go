@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"tan-test-go/internal/config"
+	"tan-test-go/internal/handler"
+	"tan-test-go/internal/repository"
+	"tan-test-go/internal/service"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -26,9 +29,20 @@ func main() {
 	redis := config.RedisConn(ctx, conf)
 	_ = redis
 
-	app.Get("/ping", func(c *fiber.Ctx) error {
+	// Initialize repository and service
+	playerRepo := repository.NewPlayerRepostory(ctx, db)
+	playerService := service.NewPlayerService(playerRepo)
+
+	// Initialize player handler
+	playerHandler := handler.NewPlayerHandler(playerService)
+
+	// Routes
+	api := app.Group("/api")
+	api.Get("/ping", func(c *fiber.Ctx) error {
 		return c.SendString("pong!")
 	})
+	api.Post("/create-batch", playerHandler.CreatePlayers)
+	api.Get("/map-data", playerHandler.GetPlayersGeoJSON)
 
 	appPort := conf.GetString("app.port")
 	appHost := conf.GetString("app.host")
