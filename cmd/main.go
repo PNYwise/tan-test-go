@@ -29,11 +29,11 @@ func main() {
 	redis := config.RedisConn(ctx, conf)
 
 	// Initialize repository and service
-	playerRepo := repository.NewPlayerRepostory(ctx, db)
-	playerService := service.NewPlayerService(playerRepo, redis)
+	playerRepo := repository.NewPlayerRepository(ctx, db)
+	playerService := service.NewPlayerService(playerRepo)
 
 	// Initialize player handler
-	playerHandler := handler.NewPlayerHandler(playerService)
+	playerHandler := handler.NewPlayerHandler(playerService, redis)
 
 	// Routes
 	api := app.Group("/api")

@@ -13,7 +13,7 @@ type playerRepo struct {
 	ctx context.Context
 }
 
-func NewPlayerRepostory(ctx context.Context, db *pgx.Conn) domain.IPlayerRepository {
+func NewPlayerRepository(ctx context.Context, db *pgx.Conn) domain.IPlayerRepository {
 	return &playerRepo{db, ctx}
 }
 
