@@ -27,11 +27,10 @@ func main() {
 	defer db.Close(ctx)
 
 	redis := config.RedisConn(ctx, conf)
-	_ = redis
 
 	// Initialize repository and service
 	playerRepo := repository.NewPlayerRepostory(ctx, db)
-	playerService := service.NewPlayerService(playerRepo)
+	playerService := service.NewPlayerService(playerRepo, redis)
 
 	// Initialize player handler
 	playerHandler := handler.NewPlayerHandler(playerService)
