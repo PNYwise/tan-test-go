@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"tan-test-go/internal/config"
 	"tan-test-go/internal/handler"
 	"tan-test-go/internal/repository"
@@ -15,8 +14,6 @@ import (
 )
 
 func main() {
-	createLogDirectoryIfNotExists()
-
 	// Initialize the logger
 	logger, err := config.NewLogger()
 	if err != nil {
@@ -62,11 +59,4 @@ func main() {
 	appPort := conf.GetString("app.port")
 	appHost := conf.GetString("app.host")
 	log.Fatal(app.Listen(fmt.Sprintf("%s:%s", appHost, appPort)))
-}
-
-func createLogDirectoryIfNotExists() {
-	if err := os.MkdirAll("logs", os.ModePerm); err != nil {
-		fmt.Printf("Failed to create logs directory: %v\n", err)
-		os.Exit(1)
-	}
 }
