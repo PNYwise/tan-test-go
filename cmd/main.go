@@ -29,19 +29,19 @@ func main() {
 	redis := config.RedisConn(ctx, conf)
 
 	// Initialize repository and service
-	playerRepo := repository.NewPlayerRepository(ctx, db)
-	playerService := service.NewPlayerService(playerRepo)
+	geolocationRepo := repository.NewGeolocationRepository(ctx, db)
+	geolocationService := service.NewGeolocationService(geolocationRepo)
 
-	// Initialize player handler
-	playerHandler := handler.NewPlayerHandler(playerService, redis)
+	// Initialize handler
+	geolocationHandler := handler.NewGeolocationHandler(geolocationService, redis)
 
 	// Routes
 	api := app.Group("/api")
 	api.Get("/ping", func(c *fiber.Ctx) error {
 		return c.SendString("pong!")
 	})
-	api.Post("/create-batch", playerHandler.CreatePlayers)
-	api.Get("/map-data", playerHandler.GetPlayersGeoJSON)
+	api.Post("/create-batch", geolocationHandler.CreateGeolocations)
+	api.Get("/map-data", geolocationHandler.GetGeolocationsGeoJSON)
 
 	appPort := conf.GetString("app.port")
 	appHost := conf.GetString("app.host")

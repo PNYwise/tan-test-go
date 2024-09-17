@@ -1,6 +1,7 @@
-CREATE TABLE IF NOT EXISTS players (
+CREATE TABLE IF NOT EXISTS geolocations (
     id SERIAL PRIMARY KEY,
-    player_name VARCHAR(255) NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
+    "description" TEXT,
     lat DOUBLE PRECISION NOT NULL,
     lng DOUBLE PRECISION NOT NULL
 );
