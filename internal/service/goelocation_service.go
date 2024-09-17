@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"tan-test-go/internal/domain"
 
 	geojson "github.com/paulmach/go.geojson"
@@ -16,14 +17,17 @@ func NewGeolocationService(geolocationRepo domain.IGeolocationRepository) domain
 
 // CreateGeolocations implements domain.IGeolocationService.
 func (g *geolocationService) CreateGeolocations(players *[]domain.Geolocation) error {
-	return g.geolocationRepo.CreateBatch(players)
+	if err := g.geolocationRepo.CreateBatch(players); err != nil {
+		return errors.New("Internal Server error")
+	}
+	return nil
 }
 
 // GetGeolocationsGeoJSON implements domain.IGeolocationService.
 func (g *geolocationService) GetGeolocationsGeoJSON() (*geojson.FeatureCollection, error) {
 	geolocations, err := g.geolocationRepo.GetGeolocations()
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Internal Server error")
 	}
 	// Create GeoJSON
 	featureCollection := geojson.NewFeatureCollection()

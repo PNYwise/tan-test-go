@@ -31,7 +31,7 @@ func (g *GeolocationHandler) CreateGeolocations(c *fiber.Ctx) error {
 
 	err := g.geolocationService.CreateGeolocations(&input.Items)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to create Geolocation"})
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.Status(201).JSON(fiber.Map{"message": "Geolocation created successfully"})
@@ -47,7 +47,7 @@ func (g *GeolocationHandler) GetGeolocationsGeoJSON(c *fiber.Ctx) error {
 		geojsonData, err := g.geolocationService.GetGeolocationsGeoJSON()
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{
-				"error": "Failed to fetch Geolocation",
+				"error": err.Error(),
 			})
 		}
 
