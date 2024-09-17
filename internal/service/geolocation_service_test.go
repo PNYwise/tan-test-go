@@ -1,7 +1,6 @@
 package service_test
 
 import (
-	"encoding/json"
 	"tan-test-go/internal/domain"
 	mock_test "tan-test-go/internal/repository/_mock"
 	"tan-test-go/internal/service"
@@ -36,21 +35,25 @@ func TestGetGeolocationGeoJSON(t *testing.T) {
 		{Name: "my home 2", Description: "test Geolocation 2", Lat: 34.0522, Lng: -118.2437},
 	}
 
+	// Mock the repository to return geolocations
 	mockRepo.On("GetGeolocations").Return(&geolocations, nil)
 
-	featureCollection := geojson.NewFeatureCollection()
+	// Create the expected GeoJSON FeatureCollection
+	expectedFeatureCollection := geojson.NewFeatureCollection()
 	for _, geolocation := range geolocations {
 		point := geojson.NewPointFeature([]float64{geolocation.Lng, geolocation.Lat})
 		point.Properties["name"] = geolocation.Name
 		point.Properties["description"] = geolocation.Description
-		featureCollection.AddFeature(point)
+		expectedFeatureCollection.AddFeature(point)
 	}
-	expectedGeoJSON, _ := json.Marshal(featureCollection)
-	expectedGeoJSONString := string(expectedGeoJSON)
 
+	// Call the service
 	geojsonData, err := geolocationService.GetGeolocationsGeoJSON()
 	assert.NoError(t, err)
-	assert.JSONEq(t, expectedGeoJSONString, geojsonData)
 
+	// Compare the returned FeatureCollection with the expected one
+	assert.Equal(t, expectedFeatureCollection, geojsonData)
+
+	// Ensure the mock expectations were met
 	mockRepo.AssertExpectations(t)
 }
