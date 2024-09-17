@@ -54,7 +54,7 @@ func (g *geolocationRepo) CreateBatch(geolocations *[]domain.Geolocation) error 
 
 // GetGeolocations implements domain.IPlayerRepository.
 func (g *geolocationRepo) GetGeolocations() (*[]domain.Geolocation, error) {
-	rows, err := g.db.Query(g.ctx, "SELECT id, name, description1, lat, lng FROM geolocations")
+	rows, err := g.db.Query(g.ctx, "SELECT id, name, description, lat, lng FROM geolocations")
 	if err != nil {
 		g.logger.Error("Error fetching geolocations", zap.Error(err))
 		return nil, err
