@@ -1,1 +1,3 @@
 conf/development.yaml
+logs
+cmd/main

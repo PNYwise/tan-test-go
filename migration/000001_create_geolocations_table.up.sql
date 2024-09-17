@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS geolocations (
+    id SERIAL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL,
+    "description" TEXT,
+    lat DOUBLE PRECISION NOT NULL,
+    lng DOUBLE PRECISION NOT NULL
+);
