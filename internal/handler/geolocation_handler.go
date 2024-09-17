@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"tan-test-go/internal/domain"
 	"time"
 
@@ -45,17 +46,35 @@ func (g *GeolocationHandler) GetGeolocationsGeoJSON(c *fiber.Ctx) error {
 	if err == redis.Nil { // Data not in Redis
 		geojsonData, err := g.geolocationService.GetGeolocationsGeoJSON()
 		if err != nil {
-			return c.Status(500).SendString("Failed to fetch Geolocation")
+			return c.Status(500).JSON(fiber.Map{
+				"error": "Failed to fetch Geolocation",
+			})
 		}
 
-		// Cache result in Redis with a 30-second expiration
-		g.rdb.Set(ctx, cacheKey, geojsonData, 30*time.Second)
+		// Cache the serialized result in Redis with a 60-second expiration
+		geojsonBytes, err := json.Marshal(geojsonData)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": "Failed to marshal GeoJSON",
+			})
+		}
+		g.rdb.Set(ctx, cacheKey, geojsonBytes, 60*time.Second)
 
-		return c.Status(200).SendString(geojsonData)
+		// Return the JSON response
+		return c.Status(200).JSON(geojsonData)
 	} else if err != nil {
-		return c.Status(500).SendString("Failed to fetch data from cache")
+		return c.Status(500).JSON(fiber.Map{
+			"error": "Failed to fetch data from cache",
+		})
 	}
 
-	// Data found in Redis, return it
-	return c.Type("application/json").SendString(val)
+	// Data found in Redis, unmarshal it and return as JSON
+	var cachedGeoJSON interface{}
+	if err := json.Unmarshal([]byte(val), &cachedGeoJSON); err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": "Failed to unmarshal cached data",
+		})
+	}
+
+	return c.Status(200).JSON(cachedGeoJSON)
 }

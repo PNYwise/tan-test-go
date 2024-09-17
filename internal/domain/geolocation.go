@@ -1,5 +1,7 @@
 package domain
 
+import geojson "github.com/paulmach/go.geojson"
+
 type Geolocation struct {
 	ID          uint    `json:"id"`
 	Name        string  `json:"name"`
@@ -10,7 +12,7 @@ type Geolocation struct {
 
 type IGeolocationService interface {
 	CreateGeolocations(players *[]Geolocation) error
-	GetGeolocationsGeoJSON() (string, error)
+	GetGeolocationsGeoJSON() (*geojson.FeatureCollection, error)
 }
 
 type IGeolocationRepository interface {

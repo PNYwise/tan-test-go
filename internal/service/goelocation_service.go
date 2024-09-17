@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"tan-test-go/internal/domain"
 
 	geojson "github.com/paulmach/go.geojson"
@@ -21,10 +20,10 @@ func (g *geolocationService) CreateGeolocations(players *[]domain.Geolocation) e
 }
 
 // GetGeolocationsGeoJSON implements domain.IGeolocationService.
-func (g *geolocationService) GetGeolocationsGeoJSON() (string, error) {
+func (g *geolocationService) GetGeolocationsGeoJSON() (*geojson.FeatureCollection, error) {
 	geolocations, err := g.geolocationRepo.GetGeolocations()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	// Create GeoJSON
 	featureCollection := geojson.NewFeatureCollection()
@@ -35,10 +34,5 @@ func (g *geolocationService) GetGeolocationsGeoJSON() (string, error) {
 		featureCollection.AddFeature(point)
 	}
 
-	geojsonBytes, err := json.Marshal(featureCollection)
-	if err != nil {
-		return "", err
-	}
-
-	return string(geojsonBytes), nil
+	return featureCollection, nil
 }
