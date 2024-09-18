@@ -1,17 +1,15 @@
 package config
 
 import (
-	"fmt"
 	"os"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-func NewLogger() (*zap.Logger, error) {
+func NewLogger() *zap.Logger {
 	if err := os.MkdirAll("logs", os.ModePerm); err != nil {
-		fmt.Printf("Failed to create logs directory: %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
 
 	config := zap.Config{
@@ -33,8 +31,8 @@ func NewLogger() (*zap.Logger, error) {
 
 	logger, err := config.Build()
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
-	return logger, nil
+	return logger
 }

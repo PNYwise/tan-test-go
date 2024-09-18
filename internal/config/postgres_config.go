@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/spf13/viper"
@@ -22,18 +21,18 @@ func getDatabaseConn(ctx context.Context, conf *viper.Viper) *pgx.Conn {
 	)
 	connConfig, err := pgx.ParseConfig(dbConfig)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	newDB, err := pgx.ConnectConfig(ctx, connConfig)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	if err := newDB.Ping(ctx); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	log.Printf("Connected to Database \n")
+	fmt.Printf("Connected to Database \n")
 	db = newDB
 	return db
 }

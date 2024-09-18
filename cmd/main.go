@@ -15,13 +15,10 @@ import (
 
 func main() {
 	// Initialize the logger
-	logger, err := config.NewLogger()
-	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
-	}
+	logger := config.NewLogger()
 	defer func() {
 		if err := logger.Sync(); err != nil {
-			log.Fatalf("Failed to flush logs: %v", err)
+			panic(err)
 		}
 	}()
 
