@@ -15,13 +15,10 @@ import (
 
 func main() {
 	// Initialize the logger
-	logger, err := config.NewLogger()
-	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
-	}
+	logger := config.NewLogger()
 	defer func() {
 		if err := logger.Sync(); err != nil {
-			log.Fatalf("Failed to flush logs: %v", err)
+			panic(err)
 		}
 	}()
 
@@ -40,12 +37,16 @@ func main() {
 	// Initialize Redis connection
 	redis := config.RedisConn(ctx, conf)
 
+	// Initialize validator
+	val := config.NewValidator()
+
 	// Initialize repository and service with logger
+	redisRepo := repository.NewRedisRepository(ctx, redis)
 	geolocationRepo := repository.NewGeolocationRepository(ctx, db, logger)
-	geolocationService := service.NewGeolocationService(geolocationRepo)
+	geolocationService := service.NewGeolocationService(geolocationRepo, redisRepo, val)
 
 	// Initialize handler with logger
-	geolocationHandler := handler.NewGeolocationHandler(geolocationService, redis)
+	geolocationHandler := handler.NewGeolocationHandler(geolocationService)
 
 	// Define routes
 	api := app.Group("/api")

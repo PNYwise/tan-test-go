@@ -18,9 +18,6 @@ func NewGeolocationRepository(ctx context.Context, db *pgx.Conn, logger *zap.Log
 	return &geolocationRepo{db, ctx, logger}
 }
 
-// Assuming zap logger is initialized in geolocationRepo struct
-// For example, add it as a field: logger *zap.Logger
-
 // CreateBatch implements domain.IGeolocationRepository.
 func (g *geolocationRepo) CreateBatch(geolocations *[]domain.Geolocation) error {
 	tx, err := g.db.Begin(g.ctx)
@@ -28,11 +25,8 @@ func (g *geolocationRepo) CreateBatch(geolocations *[]domain.Geolocation) error 
 		g.logger.Error("Error starting transaction", zap.Error(err))
 		return err
 	}
-	defer func() {
-		if err := tx.Rollback(g.ctx); err != nil {
-			g.logger.Error("Error rolling back transaction", zap.Error(err))
-		}
-	}()
+	// Ensure rollback is called if there is an error or panic
+	defer tx.Rollback(g.ctx)
 
 	for _, geolocation := range *geolocations {
 		_, err := tx.Exec(

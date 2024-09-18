@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
@@ -20,9 +19,9 @@ func RedisConn(ctx context.Context, conf *viper.Viper) *redis.Client {
 	// Check the connection
 	_, err := rdb.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalf("Could not connect to Redis: %v", err)
+		panic(err)
 	} else {
-		log.Printf("Connected to Redis \n")
+		fmt.Printf("Connected to Redis \n")
 	}
 
 	return rdb
