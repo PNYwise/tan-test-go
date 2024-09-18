@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"tan-test-go/internal/config"
 	"tan-test-go/internal/domain"
 
 	geojson "github.com/paulmach/go.geojson"
@@ -9,15 +10,20 @@ import (
 
 type geolocationService struct {
 	geolocationRepo domain.IGeolocationRepository
+	validator       config.Validator
 }
 
-func NewGeolocationService(geolocationRepo domain.IGeolocationRepository) domain.IGeolocationService {
-	return &geolocationService{geolocationRepo: geolocationRepo}
+func NewGeolocationService(geolocationRepo domain.IGeolocationRepository, validator config.Validator) domain.IGeolocationService {
+	return &geolocationService{geolocationRepo, validator}
 }
 
 // CreateGeolocations implements domain.IGeolocationService.
-func (g *geolocationService) CreateGeolocations(players *[]domain.Geolocation) error {
-	if err := g.geolocationRepo.CreateBatch(players); err != nil {
+func (g *geolocationService) CreateGeolocations(geolocation []domain.Geolocation) error {
+	if err := g.validator.ValidateStruct(geolocation); err != nil {
+		return err
+	}
+
+	if err := g.geolocationRepo.CreateBatch(&geolocation); err != nil {
 		return errors.New("Internal Server error")
 	}
 	return nil

@@ -37,9 +37,12 @@ func main() {
 	// Initialize Redis connection
 	redis := config.RedisConn(ctx, conf)
 
+	// Initialize validator
+	val := config.NewValidator()
+
 	// Initialize repository and service with logger
 	geolocationRepo := repository.NewGeolocationRepository(ctx, db, logger)
-	geolocationService := service.NewGeolocationService(geolocationRepo)
+	geolocationService := service.NewGeolocationService(geolocationRepo, val)
 
 	// Initialize handler with logger
 	geolocationHandler := handler.NewGeolocationHandler(geolocationService, redis)

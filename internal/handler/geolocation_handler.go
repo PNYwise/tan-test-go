@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"tan-test-go/internal/config"
 	"tan-test-go/internal/domain"
 	"time"
 
@@ -29,8 +30,12 @@ func (g *GeolocationHandler) CreateGeolocations(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
 	}
 
-	err := g.geolocationService.CreateGeolocations(&input.Items)
+	err := g.geolocationService.CreateGeolocations(input.Items)
 	if err != nil {
+		if config.IsValidationError(err) {
+			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+
+		}
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
