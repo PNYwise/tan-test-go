@@ -41,11 +41,12 @@ func main() {
 	val := config.NewValidator()
 
 	// Initialize repository and service with logger
+	redisRepo := repository.NewRedisRepository(ctx, redis)
 	geolocationRepo := repository.NewGeolocationRepository(ctx, db, logger)
-	geolocationService := service.NewGeolocationService(geolocationRepo, val)
+	geolocationService := service.NewGeolocationService(geolocationRepo, redisRepo, val)
 
 	// Initialize handler with logger
-	geolocationHandler := handler.NewGeolocationHandler(geolocationService, redis)
+	geolocationHandler := handler.NewGeolocationHandler(geolocationService)
 
 	// Define routes
 	api := app.Group("/api")
